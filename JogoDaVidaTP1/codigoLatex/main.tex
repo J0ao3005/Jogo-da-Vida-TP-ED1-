@@ -1,0 +1,287 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{titling}
+\usepackage{float}
+
+\title{Jogo da Vida}
+\author{João Vitor Coelho Oliveira \\ Matrícula: 23.1.4133}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+    Universidade Federal de Ouro Preto\\
+    Ciência da Computação\\
+    Estrutura de Dados I
+\end{center}
+
+\begin{abstract}
+    Neste trabalho prático de Estrutura de Dados I, será abordado implementação do Jogo da Vida de John Conway em C. O foco está na metodologia utilizada, os resultados obtidos e a análise de desempenho, incluindo o uso de Valgrind para observação do tempo de execução. 
+\end{abstract}
+
+\section{Introdução}
+O jogo da vida é um autômato celular desenvolvido pelo matemático britânico John Horton Conway em 1970. O jogo foi criado de modo a reproduzir, através de regras simples, as alterações e mudanças em grupos de seres vivos, tendo aplicações em diversas áreas da ciência. 
+
+\subsection{Especificações do Problema}
+Em resumo, a cada iteração, as células podem viver, morrer ou se reproduzir seguindo regras específicas baseadas no número de vizinhos vivos. O programa recebe uma configuração inicial e o número de iterações, exibindo o estado final do grid após a execução das iterações.
+\begin{verbatim}
+Regras:    
+\end{verbatim}
+
+\begin{enumerate}
+    \item \texttt Qualquer célula viva com menos de dois vizinhos vivos morre de solidão.
+    \item \texttt Qualquer célula viva com mais de três vizinhos vivos morre de superpopulação.
+    \item \texttt Qualquer célula com exatamente três vizinhos vivos se torna uma célula viva.
+    \item \texttt Qualquer célula com dois vizinhos vivos continua no mesmo estado para a próxima geração.
+\end{enumerate}
+
+\subsection{Especificações da Máquina}
+
+\begin{verbatim}
+    Processador : Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz 
+    2.71 GHz
+\end{verbatim}
+\begin{verbatim}
+    Memória RAM  : 16,0 GB 
+\end{verbatim}
+\begin{verbatim}
+    Sistema Operacional : Windows 10 
+\end{verbatim}
+\section{Considerações Iniciais}
+\begin{itemize}
+    \item Ambiente de desenvolvimento do código fonte: Visual Studio Code
+    \item Linguagem Utilizada: C
+    \item Ambiente de desenvolvimento da documentação: Overleaf / LaTeX
+\end{itemize}
+Para a implementação foram usadas ferramentas como Valgrind, para analisar dinâmicamente o código e Gcc como compilador. Também foi usado WSL para executar um sistema de arquivos linux para realizar testes em outros tipos de sistemas operacionais.
+
+\section{Metodologia}
+A implementação foi dividida em três partes principais: as funções de manipulação, lógica do jogo e o arquivo principal, que utiliza as funções definidas nos outros arquivos para executar o autômato.
+
+\subsection{Detalhes da Implementação}
+
+A estrutura strDados é utilizada para armazenar a matriz principal (matrizPrincipal) e o tamanho da matriz (tamanhoMat). Esta estrutura permite encapsular as informações relevantes para a operação do autômato celular.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{struct.png}
+        \caption{Estrutura strDados}
+        \label{fig:enter-label}
+    \end{figure}
+
+Para atingir o objetivo, foi construído um Tipo Abstrato de Dados (TAD) \texttt{Automato} como representação do reticulado. O TAD implementa as seguintes operações:
+\begin{itemize}
+
+    \item \texttt{alocarReticulado}: Aloca memória para uma matriz quadrada de tamanho 'tamanhoMat x tamanhoMat'.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{aloca.png}
+        \caption{Função alocarReticulado}
+        \label{fig:enter-label1}
+    \end{figure}
+    
+    
+    \item \texttt{desalocarReticulado}: Libera a memória alocada para a matriz.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{desalocar.png}
+        \caption{Função desalocarReticulado}
+        \label{fig:enter-label2}
+    \end{figure}    
+    
+    \item \texttt{leEntradaConsole}: Lê os valores da matriz a partir do terminal.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{leeeeee.png}
+        \caption{Função leEntradaConsole}
+        \label{fig:enter-label3}
+    \end{figure}
+    
+    \item \texttt{evoluirReticulado}: Implementa a lógica de evolução do autômato celular ao longo de várias gerações, conforme as regras do jogo da vida.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{evoluir.png}
+        \caption{Função evoluirReticulado}
+        \label{fig:enter-label4}
+    \end{figure}  
+    
+    \item \texttt{imprimeReticulado}: Imprime a matriz principal no console.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{imprime.png}
+        \caption{Função imprimeReticulado}
+        \label{fig:enter-label5}
+    \end{figure}
+    
+\end{itemize}
+
+
+\subsection{Entrada}
+A entrada foi fornecida por meio de arquivos. A primeira linha especifica as dimensões do reticulado \(D\) e o número de gerações a serem processadas. Em seguida, é apresentada uma matriz de valores binários que reproduz o reticulado do jogo da vida a ser analisado.
+
+\subsection{Saída}
+A saída é uma matriz com a mesma dimensão da entrada, contendo o estado das células na próxima geração, com base no conjunto de regras do jogo da vida.
+
+\subsection{Casos de Teste}
+Para verificar a performance e corretude do código, foram utilizados vários casos de teste com diferentes tamanhos de grids e configurações iniciais de células vivas, juntamente com um corretor em python fornecido nas informações do trabalho. Esses testes garantiram que o programa responde corretamente às regras do jogo e que todas as células evoluem conforme esperado.
+
+Os casos teste foram definidos em arquivos de texto contendo a dimensão do grid, o número de iterações e o estado inicial.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{Testes5.1_15.0.png}
+        \caption{Testes de arquivo com dimensoes 5x5 e 15x15}
+        \label{fig:enter-label6}
+ \end{figure}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{teste30.0.png}
+    \caption{Teste de arquivo com dimensão 30x30}
+    \label{fig:enter-label7}
+\end{figure}
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{corretor.png}
+        \caption{Teste utilizando corretor.py}
+        \label{fig:enter-label16}
+\end{figure}
+
+
+\subsection{Resultados}
+Para avaliar o desempenho da implementação, utilizamos o Valgrind para monitorar o tempo de execução e a utilização de memória, juntam. A seguir, será apresentado os resultados obtidos.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{valgrind 5x5.png}
+        \caption{Testes de arquivo usando Valgrind (5x5)}
+        \label{fig:enter-label8}
+    \end{figure}
+    
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{valgrind 15 x 15.png}
+        \caption{Teste de arquivo usando Valgrind (15x15)}
+        \label{fig:enter-label9}
+\end{figure}
+
+\section{Lógica de Resolução do Problema}
+
+\small A função evoluirReticulado é responsável por implementar a lógica de evolução do autômato celular ao longo de várias gerações, conforme as regras do jogo.
+O primeiro loop itera sobre o número de gerações especificado por qntMov. Em cada iteração, a matriz principal evolui uma geração.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{1.png}
+        \caption{Loop de gerações especificado por qntMov}
+        \label{fig:enter-label10}
+\end{figure}
+
+Para cada geração, uma nova matriz (novaMatriz) é alocada para armazenar o estado atualizado da matriz principal. Isso permite que as atualizações sejam feitas de forma independente, sem interferir na matriz atual.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{2.png}
+        \caption{atualização da \texttt{novaMatriz}}
+        \label{fig:enter-label11}
+\end{figure}
+
+Dois loops aninhados percorrem todas as células da matriz principal. i e j são os índices das células na matriz.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{3.png}
+        \caption{Loops aninhados}
+        \label{fig:enter-label12}
+\end{figure}
+
+Para cada célula (i, j), são contados os vizinhos vivos. Isso é feito usando dois loops que percorrem a vizinhança 3x3 ao redor da célula.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{4.png}
+        \caption{Loops para contagem de vizinhos}
+        \label{fig:enter-label13}
+\end{figure}
+
+\begin{enumerate}
+    \item As variáveis x e y percorrem os valores -1, 0 e 1, representando os deslocamentos para verificar os vizinhos ao redor da célula atual.
+    \item A condição \texttt{if (x == 0 \&\& y == 0) continue}; é usada para ignorar a própria célula.
+    \item As variáveis ni e nj são usadas para calcular as posições dos vizinhos.
+    \item A condição \texttt{if (ni >= 0 \&\& ni < tamanhoMat \\
+    \&\& nj >= 0 \&\& nj < tamanhoMat)} verifica se os índices dos vizinhos estão dentro dos limites da matriz.
+
+    \item O contador vivos é incre\-men\-tado para cada vizinho vivo encontrado \texttt{(dados\ -> matriz-Principal[ni][nj])}.
+
+\end{enumerate}
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{5.png}
+        \caption{Loop para encontrar vizinhos}
+        \label{fig:enter-label14}
+\end{figure}
+
+As regras do jogo da vida são aplicadas para determinar o novo estado da célula (i, j) na nova matriz:
+
+
+
+\begin{itemize}
+    \item Célula Viva:
+        \begin{itemize}
+             \item Se a célula está viva (\texttt{dados -> matrizPrincipal[i][j] == 1}):
+                \begin{itemize}
+                    \item Ela se torna viva (novaMatriz[i][j] = 1) se tiver menos de 2 ou mais de 3 vizinhos vivos (subpopulação ou superpopulação).
+                    \item Caso contrário, ela continua viva (novaMatriz[i][j] = 1).
+                \end{itemize}
+        \end{itemize}
+\end{itemize}
+
+\begin{itemize}
+    \item Célula Morta:
+        \begin{itemize}
+             \item Se a célula está morta (\texttt{dados -> matrizPrincipal[i][j] == 0}):
+                \begin{itemize}
+                    \item Ela se torna morta (novaMatriz[i][j] = 0) se tiver exatamente 3 vizinhos vivos (reprodução).
+                    \item Caso contrário, ela permanece morta (novaMatriz[i][j] = 0).
+                \end{itemize}
+        \end{itemize}
+\end{itemize}
+
+Após atualizar todas as células, a matriz principal antiga é desalocada usando a função desalocarReticulado. Em seguida, a nova matriz (novaMatriz) é atribuída à matriz principal \texttt{(dados->matrizPrincipal)}.
+
+\begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{6.png}
+        \caption{chamada da \texttt{novaMatriz para a matriz principal}}
+        \label{fig:enter-label15}
+\end{figure}
+
+\section{Conclusão}
+O núcleo do projeto é a função evoluirReticulado, que aplica com sucesso as regras do jogo da vida e permite observar como padrões surpreendentes podem ser criados por interações locais entre células. A estrutura modular do código facilitou a leitura, manutenção e expansão do programa. Isso organizou o processo de desenvolvimento e diminuiu a probabilidade de erros.
+
+Esse projeto, além da parte técnica, enfatiza o gerenciamento de recursos eficaz, especialmente a memória, para garantir que a implementação seja não apenas funcional, mas também eficiente.
+
+\section{Referências}
+\begin{itemize}
+
+    \item Gardner, M. (1970). Mathematical games: The fantastic combinations of John Conway's new solitaire game "life". Scientific American, 223(4):120-123.
+    \item Valgrind. Disponível em: \url{http://valgrind.org/}
+    \item Visual Studio Code. Disponível em: \url{https://code.visualstudio.com/}
+    
+\end{itemize}
+
+\end{document}
