@@ -1,0 +1,204 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{titling}
+\usepackage{float}
+
+\title{Jogo da Vida 2 - Implementação com Hash Duplo}
+\author{João Vitor Coelho Oliveira \\ Matrícula: 23.1.4133}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+    Universidade Federal de Ouro Preto\\
+    Ciência da Computação\\
+    Estrutura de Dados I
+\end{center}
+
+\begin{abstract}
+    Este trabalho prático apresenta a implementação do Jogo da Vida de John Conway utilizando uma Tabela Hash de Endereçamento Linear com Hash Duplo. O relatório destaca as vantagens da nova abordagem em relação à versão anterior, que utilizava listas encadeadas para representar a matriz esparsa. As decisões de implementação, desafios e análise de desempenho são discutidos em detalhes.
+\end{abstract}
+
+\section{Introdução}
+O Jogo da Vida é um autômato celular criado por John Horton Conway em 1970. Esta implementação simula a evolução de células vivas e mortas em um grid bidimensional ao longo de várias gerações, de acordo com regras simples baseadas no número de vizinhos vivos. Este trabalho explora uma abordagem com Tabelas Hash para otimizar a memória e o desempenho em grids grandes.
+
+\subsection{Especificações do Problema}
+As regras do Jogo da Vida são baseadas no estado dos vizinhos de cada célula:
+\begin{enumerate}
+    \item Células vivas com menos de dois vizinhos vivos morrem por solidão.
+    \item Células vivas com mais de três vizinhos vivos morrem por superpopulação.
+    \item Células mortas com exatamente três vizinhos vivos tornam-se vivas.
+    \item Células vivas com dois ou três vizinhos vivos continuam vivas.
+\end{enumerate}
+
+O objetivo é simular várias gerações do grid, imprimindo o estado final.
+
+\subsection{Especificações da Máquina}
+\begin{verbatim}
+Processador: Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz
+Memória RAM: 16,0 GB
+Sistema Operacional: Windows 10
+\end{verbatim}
+
+\section{Considerações Iniciais}
+\begin{itemize}
+    \item \textbf{Ambiente de desenvolvimento}: Visual Studio Code
+    \item \textbf{Linguagem Utilizada}: C
+    \item \textbf{Ferramentas}: GCC, Valgrind, WSL (Windows Subsystem for Linux)
+\end{itemize}
+
+\section{Metodologia}
+Esta seção detalha as decisões de implementação, as vantagens da Tabela Hash com Hash Duplo em relação à versão anterior com listas encadeadas, e o processo de evolução do grid.
+
+\subsection{Implementação com Hash Duplo}
+Nesta implementação, utilizamos uma Tabela Hash de Endereçamento Linear com Hash Duplo para representar as células vivas no grid. A ideia é mapear as coordenadas das células vivas para uma tabela hash, permitindo um acesso rápido e eficiente ao estado de cada célula. O uso de hash duplo ajuda a reduzir colisões, garantindo que as células sejam distribuídas de maneira uniforme na tabela.
+
+\subsection{Vantagens do Hash Duplo}
+A utilização de uma Tabela Hash traz diversas vantagens em relação à abordagem anterior com listas encadeadas:
+\begin{itemize}
+    \item \textbf{Acesso Rápido}: O uso de hash duplo permite acessar o estado de uma célula em tempo constante \(O(1)\), comparado ao tempo linear \(O(n)\) em listas encadeadas.
+    \item \textbf{Menor Uso de Memória}: Apenas as células vivas são armazenadas na tabela, evitando o uso excessivo de memória em grids grandes e esparsos.
+    \item \textbf{Redução de Colisões}: O uso de duas funções hash (Hash Duplo) ajuda a minimizar colisões, garantindo uma distribuição eficiente das células vivas.
+\end{itemize}
+
+\subsection{Dificuldades e Ajustes na Implementação}
+Durante o desenvolvimento, foi necessário lidar com alguns desafios:
+\begin{itemize}
+    \item **Índices Negativos no Hash**: Inicialmente, as funções hash geravam índices negativos, causando erros de segmentação. Isso foi resolvido ajustando o cálculo do módulo para garantir que os valores fossem sempre positivos.
+    \item **Manutenção do Grid**: Ao contrário da abordagem anterior, onde o grid era uma matriz de listas encadeadas, aqui precisamos gerenciar cuidadosamente a substituição da tabela hash a cada geração.
+    \item **Gerenciamento de Memória**: O uso de Valgrind foi essencial para garantir que não houvesse vazamentos de memória ao desalocar a tabela antiga após cada geração.
+\end{itemize}
+
+\subsection{Entrada e Saída}
+\textbf{Entrada}: A entrada consiste no tamanho do grid, o número de iterações e o estado inicial das células.
+\begin{itemize}
+    \item A dimensão do grid.
+    \item O número de iterações (gerações).
+    \item O estado inicial do grid (1 para célula viva, 0 para célula morta).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{fotos/3.png}
+    \caption{Leitura de dados}
+\end{figure}
+
+\textbf{Saída}: A saída é o estado final do grid após todas as iterações, impresso como uma matriz de '0's e '1's.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{fotos/4.png}
+    \caption{Saída via terminal}
+\end{figure}
+
+\section{Comparação com a Versão Anterior}
+A versão anterior utilizava uma matriz esparsa implementada com listas encadeadas para representar as células vivas. A nova versão, com Hash Duplo, apresenta diversas melhorias:
+
+\subsection{Memória}
+Enquanto a abordagem com listas encadeadas já otimizava o uso de memória em relação a uma matriz densa, o Hash Duplo vai além, oferecendo uma alocação ainda mais eficiente. Apenas as células vivas são armazenadas, e não há necessidade de manter múltiplas listas para linhas e colunas.
+
+\subsection{Desempenho}
+A implementação com Hash Duplo proporciona um desempenho significativamente melhor em grids grandes. O acesso constante \(O(1)\) às células vivas é uma vantagem crucial em relação ao tempo linear das listas encadeadas. Isso foi especialmente notado em casos de teste com grids maiores, onde a versão com hash duplo executa mais rapidamente.
+
+\section{Resultados}
+Os resultados obtidos mostram que a implementação com hash duplo foi bem-sucedida. O uso de memória foi otimizado, e o desempenho foi aprimorado em relação à versão anterior. O Valgrind foi utilizado para garantir que não houvesse vazamentos de memória, e todos os casos de teste passaram com sucesso.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{fotos/5.png}
+    \caption{Teste com corretor.py}
+\end{figure}
+\section{Lógica de Resolução}
+
+A lógica de resolução do problema foi baseada na representação do grid como uma Tabela Hash de Endereçamento Linear com Hash Duplo, onde apenas as células vivas são armazenadas. Essa abordagem otimiza o uso de memória, já que não é necessário armazenar o grid completo, e permite um processamento eficiente para grandes grids. A seguir, são detalhadas as principais funções implementadas para resolver o problema.
+
+\subsection{Uso de Tabelas Hash com Hash Duplo}
+
+Para evitar colisões e garantir uma distribuição eficiente das células vivas na tabela, utilizamos duas funções de hash. A primeira função (hash1) calcula a posição base de uma célula, enquanto a segunda função (hash2) é usada para tratar colisões, gerando um deslocamento alternativo. Esse esquema de endereçamento reduz significativamente o tempo de busca, inserção e remoção de células.
+
+A principal vantagem dessa abordagem é o tempo constante \(O(1)\) nas operações de acesso, em contraste com o tempo linear \(O(n)\) das listas encadeadas. Isso é especialmente importante em grids grandes e esparsos, onde muitas células estão mortas e não precisam ser representadas.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{fotos/1.png}
+    \caption{Funções Hash1 e Hash2}
+\end{figure}
+
+\subsection{Função \texttt{inserirCelula}}
+
+A função \texttt{inserirCelula} é responsável por inserir uma célula viva na Tabela Hash. Para isso, utilizamos as duas funções hash mencionadas. Caso ocorra uma colisão (isto é, a posição calculada pela primeira função já esteja ocupada), a segunda função hash gera um deslocamento, e a célula é inserida na nova posição disponível.
+
+Esta abordagem evita colisões de maneira eficiente, e o uso de memória é otimizado, pois apenas as células vivas são armazenadas na tabela.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{fotos/6.png}
+    \caption{Função inserirCelular}
+\end{figure}
+
+\subsection{Função \texttt{evoluirReticulado}}
+
+A função \texttt{evoluirReticulado} implementa a lógica de evolução do Jogo da Vida, onde o grid é atualizado geração após geração com base nas regras do jogo. Para cada célula viva, a função conta seus vizinhos utilizando a Tabela Hash e aplica as regras para determinar se a célula continuará viva ou morrerá.
+
+A função também verifica células mortas adjacentes para determinar se elas devem se tornar vivas na próxima geração. Ao final de cada iteração, a tabela hash antiga é substituída pela nova, que contém o estado atualizado do grid.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{fotos/7.png}
+    \caption{Função evoluirReticulado}
+\end{figure}
+
+\subsection{Função \texttt{buscarCelula}}
+
+A função \texttt{buscarCelula} realiza a busca do estado de uma célula específica no grid. Utilizando as funções de hash, ela verifica se a célula está presente na Tabela Hash (indicando que a célula está viva). Se a célula não estiver presente, isso significa que ela está morta.
+
+Essa função é essencial para verificar o estado dos vizinhos de uma célula viva e determinar sua evolução de acordo com as regras do jogo.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{fotos/8.png}
+    \caption{Função buscarCelula}
+\end{figure}
+
+\subsection{Função \texttt{contarVizinhos}}
+
+A função \texttt{contarVizinhos} verifica as oito posições ao redor de uma célula \\
+para contar quantos de seus vizinhos estão vivos. Ela utiliza a função \\
+\texttt{buscarCelula} para acessar cada uma dessas posições na Tabela Hash.
+
+Essa contagem é crucial para decidir o futuro de cada célula: se ela continuará viva, morrerá ou se tornará viva, dependendo do número de vizinhos.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{fotos/9.png}
+    \caption{Função contarVizinhos}
+\end{figure}
+
+\subsection{Vantagens da Lógica com Hash Duplo}
+
+A utilização de Tabelas Hash com Hash Duplo traz diversas vantagens, incluindo:
+\begin{itemize}
+    \item \textbf{Otimização de Memória}: Apenas as células vivas são armazenadas, o que reduz significativamente o uso de memória em grids esparsos.
+    \item \textbf{Desempenho Melhorado}: O tempo de acesso constante \(O(1)\) nas operações de busca e inserção melhora o desempenho em comparação com listas encadeadas.
+    \item \textbf{Escalabilidade}: A abordagem com hash duplo é escalável para grids grandes, permitindo a representação de configurações complexas sem consumir grandes quantidades de memória.
+\end{itemize}
+
+\section{Conclusão}
+A implementação do Jogo da Vida com Tabela Hash de Endereçamento Linear e Hash Duplo trouxe melhorias significativas em termos de desempenho e uso de memória. O projeto permitiu o aprofundamento em técnicas de otimização e estrutura de dados, além de demonstrar a importância de uma boa gestão de memória em programas complexos. A abordagem com hash duplo se mostrou eficiente e escalável, sendo uma solução robusta para o problema.
+
+\section{Referências}
+\begin{itemize}
+    \item Gardner, M. (1970). Mathematical games: The fantastic combinations of John Conway's new solitaire game "life". Scientific American, 223(4):120-123.
+    \item Valgrind. Disponível em: \url{http://valgrind.org/}
+    \item Visual Studio Code. Disponível em: \url{https://code.visualstudio.com/}
+    \item Overleaf. Disponível em: \url{https://www.overleaf.com/}
+\end{itemize}
+
+\end{document}
